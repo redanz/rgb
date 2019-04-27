@@ -3,12 +3,16 @@
 <head>
 	<title></title>
 	<style type="text/css">
-		.d {
+		.box {
 			width: 100px;
 			height: 100px;
 			border: 1px solid black;
-			background-color: rgb(0,255,0);
+			/*background-color: rgb(255,255,255);*/
 			margin: 10px;
+			float: left;
+		}
+
+		.boxContainer {
 			float: left;
 		}
 
@@ -26,42 +30,49 @@
 		}
 
 
+
+
 	</style>
 	<script src="https://code.jquery.com/jquery-3.4.0.js" integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
 	    crossorigin="anonymous"></script>
 </head>
 <body>
-	<div id='container'>
-		<div class='d'></div>
-	</div>
-	
-	<div id='input'>
-		<button id='colorButton'>New Color</button>
-		<input type="color" id="color">
-	</div>
-	
-	<button id='new'>Add New Box</button>
+	<div class='boxContainer'></div>
+	<div class='container'>
 
+		<button id='addNewBox'>Add New Box</button>
+		<input type="color" id="selectNewBoxColor">
 
+		<button id='updateColor'>Update All Colors To:</button>
+		<input type="color" id="changeColorTo">
+
+	</div>
 
 <script type="text/javascript">
 
 var colorSelector;
+var newBoxColor;
 
-$('#color').on('change',function(){
-	colorSelector = hexToRgb($('#color').val());
-	console.log('color changed to:', colorSelector);
+$('#selectNewBoxColor').on('change',function(){
+	newBoxColor = $('#selectNewBoxColor').val();
 });
 
-$('#new').on('click', function(){
-	var newDiv = $('<div>');
-	newDiv.addClass('d');
-	$('#container').append(newDiv);
+$('#changeColorTo').on('change',function(){
+	colorSelector = hexToRgb($(this).val());
+});
+
+$('#addNewBox').on('click', function(){
+	if (newBoxColor === undefined){
+		newBoxColor = '#ffffff';
+	}
+	var newBox = $('<div class="box">');
+	newBox.css('background-color', newBoxColor);
+	$('body').append(newBox);
 
 })
 
 // takes input values and starts change color function
-$('#colorButton').on('click', function(){
+$('#updateColor').on('click', function(){
 	if (colorSelector === undefined){
 		colorSelector = {r: 0, g: 0, b: 0};
 	}
@@ -70,25 +81,27 @@ $('#colorButton').on('click', function(){
 	var endR = endObj.r;
 	var endG = endObj.g;
 	var endB = endObj.b;
-	var startObj;
 	var indexArr = [];
-	for (i in getAllElements('div')) {
+	for (i in getAllElements('.box')) {
 		indexArr.push(0);
 	}
 
 
 	for (j in indexArr) {
-
 		var startObj = captureBackgroundRGBs()[j];
 		var r = towardNum(startObj.r, endR).slice();
 		var g = towardNum(startObj.g, endG).slice();
 		var b = towardNum(startObj.b, endB).slice();
 		var maxArr = Math.max(r.length, g.length, b.length);
 
-		changeColor(j, startObj, endObj);
+		
+		console.log('start:', startObj);
+		console.log('end:', endObj)
+		changeColor(j, 1000, 'endObj');
 
 		function changeColor(i, startColorObj, endColorObj) {
-			console.log(indexArr[i])
+
+			console.log(g[indexArr[i]])
 			displayBgColor(i, r[indexArr[i]], g[indexArr[i]], b[indexArr[i]]);
 			
 			if (indexArr[i] == maxArr-1) {
@@ -109,13 +122,14 @@ $('#colorButton').on('click', function(){
 			
 			setTimeout(changeColor, 10, i, r[indexArr[i]], g[indexArr[i]], b[indexArr[i]]);
 		}
+
 	}
 });
 
 // takes in element name and returns array with those element ids
 function getAllElements(element) {
 	var arr = [];
-	$('.d').each(function(i, element) {
+	$('.box').each(function(i, element) {
 		arr.push(i);
 	});
 	return arr;
@@ -123,7 +137,7 @@ function getAllElements(element) {
 
 // displays background color
 function displayBgColor(id, r, g, b) {
-	$('.d:eq('+ id +')').css('background-color', 'rgb(' + r + ',' + g + ',' + b + ')');
+	$('.box:eq('+ id +')').css('background-color', 'rgb(' + r + ',' + g + ',' + b + ')');
 }
 
 // stores numbers up to or down to end, from start
@@ -151,7 +165,7 @@ function towardNum(start, end) {
 function captureBackgroundRGBs() {
 	var arr = [];
 	var specificDiv;
-	var divs = document.querySelectorAll('.d');
+	var divs = document.querySelectorAll('.box');
 	var rgb;
 
 	for (var j=0; j<divs.length; j++){
@@ -159,7 +173,6 @@ function captureBackgroundRGBs() {
 		rgb = specificDiv.backgroundColor;
 		arr.push(rgbToObject(rgb));
 	}
-
 	return arr;
 }
 

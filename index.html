@@ -32,7 +32,7 @@
 	    crossorigin="anonymous"></script>
 </head>
 <body>
-	<div class='boxContainer'></div>
+	
 	<div class='container'>
 		<p>1. Select Color For New Box:
 			<input type="color" id="selectNewBoxColor">
@@ -45,13 +45,14 @@
 			3. Select New Color:
 			<input type="color" id="changeColorsTo">
 			<button id='updateColor'>Update All Colors To Selected Color</button>
-			</div>
 		</p>
+	</div>
+	<div class='boxContainer'></div>
 		
 
 <script type="text/javascript">
 
-var colorSelector;
+var colorSelectorAll;
 var newBoxColor;
 
 $('#selectNewBoxColor').on('change',function(){
@@ -59,27 +60,33 @@ $('#selectNewBoxColor').on('change',function(){
 });
 
 $('#changeColorsTo').on('change',function(){
-	colorSelector = hexToRgb($(this).val());
+	colorSelectorAll = hexToRgb($(this).val());
 });
 
 $('#addNewBox').on('click', function(){
 	if (newBoxColor === undefined){
-		newBoxColor = '#ffffff';
+		newBoxColor = '#000000';
 	}
-	var newBox = $('<div class="box">');
-	newBox.css('background-color', newBoxColor);
-	$('body').append(newBox);
+	var $newBox = $('<div class="box">');
+	$newBox.css('background-color', newBoxColor);
+	var $deleteButton = $('<button class="deleteButton">Delete</button>')
+	$('.boxContainer').append($newBox);
+	$($newBox).append($deleteButton);
+});
 
+$(document).on('click', '.deleteButton', function(){
+	$(this).closest('.box').remove();
 })
+
 
 // takes input values and starts change color function
 $('#updateColor').on('click', function(){
 
-	if (colorSelector === undefined){
-		colorSelector = {r: 0, g: 0, b: 0};
+	if (colorSelectorAll === undefined){
+		colorSelectorAll = {r: 0, g: 0, b: 0};
 	}
 
-	var endObj = colorSelector;
+	var endObj = colorSelectorAll;
 	var endR = endObj.r;
 	var endG = endObj.g;
 	var endB = endObj.b;
@@ -144,7 +151,6 @@ function getAllElements(element) {
 // {r: 0, g: 0, b: 0}
 // displays background color
 function displayBgColor(id, rgbObj) {
-	// console.log('Set bg color of ' + id + ' to:', 'rgb(' + rgbObj.r + ',' + rgbObj.g + ',' + rgbObj.b + ')');
 	$('.box:eq('+ id +')').css('background-color', 'rgb(' + rgbObj.r + ',' + rgbObj.g + ',' + rgbObj.b + ')');
 }
 
@@ -167,7 +173,6 @@ function towardNum(start, end) {
 	}
 	return arr;
 }
-
 
 // returns background colors of all boxes in an array of rgb objects
 function captureBackgroundRGBs() {
@@ -213,8 +218,6 @@ function hexToRgb(hex) {
         b: parseInt(result[3], 16)
     } : null;
 }
-
-
 
 </script>
 

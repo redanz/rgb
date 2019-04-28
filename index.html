@@ -115,7 +115,6 @@ $(document).on('click', '#clearAll', function(){
 
 // takes input values and starts change color function
 $('#updateColorAll').on('click', function(){
-	$("#updateColorAll").attr("disabled", true);
 
 	$('.deleteButton').hide();
 	$('.newColorSelector').hide();
@@ -124,6 +123,8 @@ $('#updateColorAll').on('click', function(){
 });
 
 function main(startColor, endColor){
+
+	
 
 	if (colorSelectorAll === undefined){
 		colorSelectorAll = {r: 0, g: 0, b: 0};
@@ -147,7 +148,7 @@ function main(startColor, endColor){
 
 
 	for (var j=0; j<boxesOnPage.length; j++) {
-
+		$("#updateColorAll").attr("disabled", true);
 
 		rGradients.push(towardNum(boxesOnPage[j].r, endR).slice());
 		gGradients.push(towardNum(boxesOnPage[j].g, endG).slice());
@@ -172,8 +173,8 @@ function main(startColor, endColor){
 				if (itemIndex === boxesOnPage.length-1){
 					$('.deleteButton').show();
 					$('.newColorSelector').show();
+					$("#updateColorAll").attr("disabled", false);
 				}
-				$("#updateColorAll").attr("disabled", false);
 				return;
 			} else {
 				if (currentR === endR){

@@ -7,7 +7,6 @@
 			width: 100px;
 			height: 100px;
 			border: 1px solid black;
-			/*background-color: rgb(255,255,255);*/
 			margin: 10px;
 			float: left;
 		}
@@ -28,10 +27,6 @@
 		input {
 			margin: 10px;
 		}
-
-
-
-
 	</style>
 	<script src="https://code.jquery.com/jquery-3.4.0.js" integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="
 	    crossorigin="anonymous"></script>
@@ -39,14 +34,20 @@
 <body>
 	<div class='boxContainer'></div>
 	<div class='container'>
-
-		<button id='addNewBox'>Add New Box</button>
-		<input type="color" id="selectNewBoxColor">
-
-		<button id='updateColor'>Update All Colors To:</button>
-		<input type="color" id="changeColorTo">
-
-	</div>
+		<p>1. Select Color:
+			<input type="color" id="selectNewBoxColor">
+			
+		</p>
+		<p>2. Add New Box(es):
+			<button id='addNewBox'>Add New Box</button>
+		</p>
+		<p>
+			3. Select New Color:
+			<input type="color" id="changeColorsTo">
+			<button id='updateColor'>Update All Colors To Selected Color</button>
+			</div>
+		</p>
+		
 
 <script type="text/javascript">
 
@@ -57,7 +58,7 @@ $('#selectNewBoxColor').on('change',function(){
 	newBoxColor = $('#selectNewBoxColor').val();
 });
 
-$('#changeColorTo').on('change',function(){
+$('#changeColorsTo').on('change',function(){
 	colorSelector = hexToRgb($(this).val());
 });
 
@@ -73,6 +74,7 @@ $('#addNewBox').on('click', function(){
 
 // takes input values and starts change color function
 $('#updateColor').on('click', function(){
+
 	if (colorSelector === undefined){
 		colorSelector = {r: 0, g: 0, b: 0};
 	}
@@ -81,48 +83,53 @@ $('#updateColor').on('click', function(){
 	var endR = endObj.r;
 	var endG = endObj.g;
 	var endB = endObj.b;
-	var indexArr = [];
-	for (i in getAllElements('.box')) {
-		indexArr.push(0);
-	}
+
+	var currentBoxes = captureBackgroundRGBs().slice();
+	var rGradients = [];
+	var gGradients = [];
+	var bGradients = [];
+	var maxArr = [];
 
 
-	for (j in indexArr) {
-		var startObj = captureBackgroundRGBs()[j];
-		var r = towardNum(startObj.r, endR).slice();
-		var g = towardNum(startObj.g, endG).slice();
-		var b = towardNum(startObj.b, endB).slice();
-		var maxArr = Math.max(r.length, g.length, b.length);
+	for (var j=0; j<currentBoxes.length; j++) {
 
+
+		rGradients.push(towardNum(currentBoxes[j].r, endR).slice());
+		gGradients.push(towardNum(currentBoxes[j].g, endG).slice());
+		bGradients.push(towardNum(currentBoxes[j].b, endB).slice());
 		
-		console.log('start:', startObj);
-		console.log('end:', endObj)
-		changeColor(j, 1000, 'endObj');
+		maxArr.push(Math.max(rGradients[j].length, gGradients[j].length, bGradients[j].length));
 
-		function changeColor(i, startColorObj, endColorObj) {
+		changeColor(j, 0, currentBoxes[j]);
 
-			console.log(g[indexArr[i]])
-			displayBgColor(i, r[indexArr[i]], g[indexArr[i]], b[indexArr[i]]);
-			
-			if (indexArr[i] == maxArr-1) {
-				indexArr[i] = 0;
+		function changeColor(itemIndex, i, currentBoxColor) {
+			var currentR = rGradients[itemIndex][i];
+			var currentG = gGradients[itemIndex][i];
+			var currentB = bGradients[itemIndex][i];
+
+			displayBgColor(itemIndex, currentBoxColor);
+			currentBoxColor.r = currentR;
+			currentBoxColor.g = currentG;
+			currentBoxColor.b = currentB;
+
+			if (i == maxArr[itemIndex]-1) {
+				i = 0;
 				return;
 			} else {
-				if (r[indexArr[i]] === endR){
-					r.push(endR);
+				if (currentR === endR){
+					rGradients[itemIndex].push(endR);
 				}
-				if (g[indexArr[i]] === endG){
-					g.push(endG);
+				if (currentG === endG){
+					gGradients[itemIndex].push(endG);
 				}
-				if (b[indexArr[i]] === endB){
-					b.push(endB);
+				if (currentB === endB){
+					bGradients[itemIndex].push(endB);
 				}
-				indexArr[i]++;
+				i++;
 			}
 			
-			setTimeout(changeColor, 10, i, r[indexArr[i]], g[indexArr[i]], b[indexArr[i]]);
+			setTimeout(changeColor, 10, itemIndex, i, currentBoxColor);
 		}
-
 	}
 });
 
@@ -134,13 +141,14 @@ function getAllElements(element) {
 	});
 	return arr;
 }
-
+// {r: 0, g: 0, b: 0}
 // displays background color
-function displayBgColor(id, r, g, b) {
-	$('.box:eq('+ id +')').css('background-color', 'rgb(' + r + ',' + g + ',' + b + ')');
+function displayBgColor(id, rgbObj) {
+	// console.log('Set bg color of ' + id + ' to:', 'rgb(' + rgbObj.r + ',' + rgbObj.g + ',' + rgbObj.b + ')');
+	$('.box:eq('+ id +')').css('background-color', 'rgb(' + rgbObj.r + ',' + rgbObj.g + ',' + rgbObj.b + ')');
 }
 
-// stores numbers up to or down to end, from start
+// increment/decrement from start num to end num and store in array
 function towardNum(start, end) {
 	var start = start;
 	var end = end;
@@ -161,7 +169,7 @@ function towardNum(start, end) {
 }
 
 
-// returns all background color in an array of rgb objects
+// returns background colors of all boxes in an array of rgb objects
 function captureBackgroundRGBs() {
 	var arr = [];
 	var specificDiv;

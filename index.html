@@ -37,14 +37,19 @@
 <body>
 	
 	<div class='container'>
-		<p class="h6">
-			1. Add New Colors:
-			<input type="color" id="selectNewBoxColor">
-			2. Change All To:
-			<input type="color" id="changeColorsTo">
-			<button class="btn btn-outline-secondary" id='updateColorAll'>Change ∆</button>
+		<div>
+			<p class="h6">1. Add New Colors:
+				<input type="color" id="selectNewBoxColor">
+			</p>
 			<button class="btn btn-outline-secondary float-right" id='clearAll'>Clear Boxes</button>
-		</p>
+			<p  class="h6">2. New Color For All:
+				<input type="color" id="changeColorsTo">
+				<button class="btn btn-outline-secondary" id='updateColorAll'>Change ∆</button>
+			</p>
+			<p class="h6">3. Patience:
+			  	<input id="silder" type="range" min="0" max="100" />
+			</p>
+		</div>
 		<!-- <p>2. Add New Box(es):
 			<button id='addNewBox'>Add New Box</button>
 		</p> -->
@@ -91,9 +96,9 @@ $('#changeColorsTo').on('change',function(){
 // 	$($newBox).append($newColorSelector);
 // });
 
-$(document).on('click', '.deleteButton', function(){
-	$(this).closest('.box').remove();
-});
+// $(document).on('click', '.deleteButton', function(){
+// 	$(this).closest('.box').remove();
+// });
 
 $(document).on('change', '.newColorSelector', function(){
 	$(this).closest('.box').css('background-color', $(this).val());
@@ -115,14 +120,14 @@ $(document).on('click', '#clearAll', function(){
 
 // takes input values and starts change color function
 $('#updateColorAll').on('click', function(){
-
+	var time = $('#silder').val();
 	$('.deleteButton').hide();
 	$('.newColorSelector').hide();
 	
-	main(false);
+	main(time, false);
 });
 
-function main(startColor, endColor){
+function main(timeOut, startColor, endColor){
 
 	
 
@@ -189,7 +194,7 @@ function main(startColor, endColor){
 				i++;
 			}
 			
-			setTimeout(changeColor, 10, itemIndex, i, currentBoxColor);
+			setTimeout(changeColor, timeOut, itemIndex, i, currentBoxColor);
 		}
 	}
 }

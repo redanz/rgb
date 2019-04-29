@@ -160,6 +160,7 @@ function main(timeOut, startColor, endColor){
 		gGradients.push(towardNum(boxesOnPage[j].g, endG).slice());
 		bGradients.push(towardNum(boxesOnPage[j].b, endB).slice());
 		
+		// Determines max number of iterations depending on start->end RGB differences
 		maxArr.push(Math.max(rGradients[j].length, gGradients[j].length, bGradients[j].length));
 
 		changeColor(j, 0, boxesOnPage[j]);
@@ -174,7 +175,7 @@ function main(timeOut, startColor, endColor){
 			currentBoxColor.g = currentG;
 			currentBoxColor.b = currentB;
 
-			if (i == maxArr[itemIndex]-1) {
+			if (i == maxArr[itemIndex]) {
 				i = 0;
 				if (itemIndex === boxesOnPage.length-1){
 					$('.deleteButton').show();
